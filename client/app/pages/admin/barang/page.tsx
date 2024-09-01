@@ -164,7 +164,6 @@ export default function Stok(){
       try {
           const token = localStorage.getItem('token')
           
-          
           const response = await axios.put(`https://jstockop-teknik-server.vercel.app/updateitem/${modalId}`,{
               name : name,
               specification: specification,
@@ -179,11 +178,8 @@ export default function Stok(){
           }});
           const {data_updated} = response.data
           // onClose()
+          closeModalEdit()
           toast.success(`Item ${data_updated[0].name} Berhasil Diupdate!`);
-          setTimeout(() => {
-            closeModalEdit()
-          }, 2000);
-          
           
       } catch (error) {
           toast.error("Error Ketika Melakukan Update");
@@ -449,7 +445,7 @@ export default function Stok(){
                                 Tutup
                                 </Button>
                                 <Button type="submit" disabled={loading}>
-                                        {loading ? 'Mengupdate data...' : 'Update Data'}
+                                        {loading ? <Loading /> : 'Update Data'}
                                 </Button>
                             </ModalFooter>
                           </form>
