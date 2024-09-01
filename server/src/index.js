@@ -16,6 +16,7 @@ app.use(bodyParser.json())
 app.use(cors())
 app.use(express.json())
 
+app.use("/",(req,res) => res.send("Server is Running"))
 app.use(router)
 
 module.exports = app
