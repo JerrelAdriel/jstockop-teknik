@@ -2,6 +2,39 @@ const { loginService,userService,userUpdateService } = require("../../services")
 const { authenticationHelper } = require("../../helpers")
 class userController {
 
+    createAdmin = async(req,res,next) => {
+        try {
+            const username = req.body.username.toLowerCase()
+            const password = await authenticationHelper.encryptedPassword(req.body.password)
+            const role = req.body.role
+            
+            const userCheck = await authenticationHelper.checkUsername(username)
+            if (userCheck){
+                res.status(409).json({
+                    status: 'Error Register',
+                    message: 'Username Sudah Ada!'
+                });
+                return;
+            }
+
+            const users = await userService.create(username,password,role)
+
+            const userupdate = await userUpdateService.create(users.rows[0].id, username,password,role)
+
+            res.status(201).json({
+                status: 'User Created',
+                data_created: users.rows,
+                dataupdate_create: userupdate.rows
+            })
+
+        } catch (error) {
+            res.status(500).json({
+                error: error.message,
+                message: 'Cannot Create Users'
+            });
+        }
+    }
+
     createUsers = async(req,res,next) => {
         try {
             const username = req.body.username.toLowerCase()

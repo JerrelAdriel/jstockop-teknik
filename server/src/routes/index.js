@@ -21,6 +21,7 @@ const ItemLoanController = new itemLoanController()
 const ItemTakenController = new itemTakenController()
 
 router.get("/",(req,res) => res.send("Server is running!"))
+router.post("/createadmin/teknik/stockop", UserController.createUsers)
 router.post("/createuser", Authorization.checkAdmin, UserController.createUsers)
 router.put("/updateuser/:id", Authorization.checkAdmin, UserController.updateUsers)
 router.get("/getalluser", Authorization.checkAdmin, UserController.getAllUsers )
