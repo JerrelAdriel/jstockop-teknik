@@ -15,7 +15,7 @@ const MyModal = ({ isOpen, onClose, id, itemId }:any) => {
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.put(`http://localhost:8000/updateaddloan/${id}`,{
+            const response = await axios.put(`https://jstockop-teknik-server.vercel.app/updateaddloan/${id}`,{
                 item_id:itemId,
                 amount          
             },{headers:{

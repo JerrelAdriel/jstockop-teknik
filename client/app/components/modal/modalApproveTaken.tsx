@@ -13,7 +13,7 @@ const MyModal = ({ isOpen, onClose, id, username,itemname,merk,specification,tot
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.post("http://localhost:8000/createfinishedtaken",{
+            const response = await axios.post("https://jstockop-teknik-server.vercel.app/createfinishedtaken",{
               id,
               username,
               itemname,

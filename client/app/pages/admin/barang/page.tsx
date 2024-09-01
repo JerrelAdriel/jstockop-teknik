@@ -17,7 +17,8 @@ import { AiOutlineDelete } from "react-icons/ai";
 import ModalAdd from "../../../components/modal/modalAddItem"
 // import ModalEdit from "../../../components/modal/modalEditItem"
 import ModalDelete from "../../../components/modal/modalDeleteItem"
-import { useRouter } from "next/navigation";
+
+// import { useRouter } from "next/navigation";
 
 // export const metadata = {
 //     title: "Halaman Stok Barang",
@@ -164,7 +165,7 @@ export default function Stok(){
           const token = localStorage.getItem('token')
           
           
-          const response = await axios.put(`http://localhost:8000/updateitem/${modalId}`,{
+          const response = await axios.put(`https://jstockop-teknik-server.vercel.app/updateitem/${modalId}`,{
               name : name,
               specification: specification,
               merk: merk,
@@ -194,7 +195,7 @@ export default function Stok(){
       setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallloan",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallloan",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -217,7 +218,7 @@ export default function Stok(){
       setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getalltaken",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getalltaken",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -240,7 +241,7 @@ export default function Stok(){
       setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallitem",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallitem",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }

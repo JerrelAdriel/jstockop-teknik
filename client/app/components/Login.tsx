@@ -10,6 +10,9 @@ import { BiSolidHide } from "react-icons/bi";
 import { BiSolidShow } from "react-icons/bi";
 import { toast } from 'react-toastify';
 
+require("dotenv").config()
+const { URL } = process.env
+
 export default function Login(){
 
     const [username, setUsername] = useState<string>('')
@@ -38,7 +41,7 @@ export default function Login(){
         event.preventDefault()
         
         try {
-            const response = await axios.post("http://localhost:8000/login",{
+            const response = await axios.post("https://jstockop-teknik-server.vercel.app/login",{
                 username,
                 password
             });

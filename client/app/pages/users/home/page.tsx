@@ -174,7 +174,7 @@ export default function Home(){
     const handleCurrentUser = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getcurrentuser",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getcurrentuser",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -189,7 +189,7 @@ export default function Home(){
     const handleDataItem = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallitem",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallitem",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -212,7 +212,7 @@ export default function Home(){
     const handleDataLoan = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getloanbyuser",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getloanbyuser",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -233,7 +233,7 @@ export default function Home(){
     const handleDataTaken = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/gettakenbyuser",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/gettakenbyuser",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }

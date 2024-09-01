@@ -14,7 +14,7 @@ const MyModal = ({ isOpen, onClose, id, nameItem, spesificationItem }:any) => {
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.delete(`http://localhost:8000/deleteitem/${id}`,{
+            const response = await axios.delete(`https://jstockop-teknik-server.vercel.app/deleteitem/${id}`,{
                 headers:{
                 "Authorization" : `Bearer ${token}`
             }

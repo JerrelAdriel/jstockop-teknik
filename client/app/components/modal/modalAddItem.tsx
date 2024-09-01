@@ -18,7 +18,7 @@ const MyModal = ({ isOpen, onClose }:any) => {
         setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.post("http://localhost:8000/createitem",{
+            const response = await axios.post("https://jstockop-teknik-server.vercel.app/createitem",{
                 name,
                 specification,
                 merk,

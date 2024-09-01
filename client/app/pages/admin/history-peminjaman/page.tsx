@@ -115,7 +115,7 @@ export default function Peminjaman(){
         try {
             const token = localStorage.getItem('token')
             
-            const response = await axios.get("http://localhost:8000/getallfinishedloanbydate",
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallfinishedloanbydate",
               {headers:{"Authorization" : `Bearer ${token}`}, 
               params:{
                 start_date: startDate,

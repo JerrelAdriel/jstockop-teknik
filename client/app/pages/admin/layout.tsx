@@ -8,7 +8,7 @@ export default function LoginLayout({children}: {children: React.ReactNode}) {
     const checkUser = async() =>{   
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.get("http://localhost:8000/getcurrentuser",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getcurrentuser",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }

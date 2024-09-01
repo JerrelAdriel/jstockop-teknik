@@ -111,7 +111,7 @@ export default function Pengambilan(){
       setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getalltaken",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getalltaken",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -136,7 +136,7 @@ export default function Pengambilan(){
       setLoading(true)
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallloan",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallloan",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }

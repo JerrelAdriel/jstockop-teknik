@@ -144,7 +144,7 @@ export default function Dashboard(){
     const handleDataItem = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallitem",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallitem",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -166,7 +166,7 @@ export default function Dashboard(){
     const handleDataLoan = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallloan",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallloan",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -185,7 +185,7 @@ export default function Dashboard(){
     const handleDataTaken = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getalltaken",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getalltaken",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -206,7 +206,7 @@ export default function Dashboard(){
     const handleDataLoanUpdate = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallfinishedloan",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallfinishedloan",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -227,7 +227,7 @@ export default function Dashboard(){
     const handleDataTakenUpdate = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getallfinishedtaken",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallfinishedtaken",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }
@@ -249,7 +249,7 @@ export default function Dashboard(){
     const handleDataUser = async() =>{
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get("http://localhost:8000/getrolestaff",{
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getrolestaff",{
                 headers:{
                     "Authorization" : `Bearer ${token}`
                 }

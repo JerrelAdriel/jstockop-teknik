@@ -110,7 +110,7 @@ export default function Pengambilan(){
         try {
             const token = localStorage.getItem('token')
             
-            const response = await axios.get("http://localhost:8000/getallfinishedtakenbydate",
+            const response = await axios.get("https://jstockop-teknik-server.vercel.app/getallfinishedtakenbydate",
               {headers:{"Authorization" : `Bearer ${token}`}, 
               params:{
                 start_date: startDate,
