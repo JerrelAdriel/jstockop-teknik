@@ -1,39 +1,66 @@
 const { takenService, takenUpdateService, itemService } = require("../../services")
 const { takenHelper } = require("../../helpers")
+const db = require("../../config/db.config")
 class itemTakenController{
     createTaken = async(req,res,next) =>{
         try {
             const user_id = req.user.rows[0].id
             const taken = req.body
-            // let takens;
-            // let newAmount;
-            // let newAmountItem;
-            // let status;
-            const item_recent = await takenHelper.reduceRecent(taken.item_id, taken.amount)
-            if (item_recent === false){
-                res.status(500).json({
-                    status: 'Cannot Create taken',
-                    message: 'Item Empty'
-                })
-                return
+
+            // Use a database transaction to prevent race conditions on stock
+            let updateItem, takens;
+            try {
+                const txResult = await db.transaction(async (client) => {
+                    // Lock the item row to prevent concurrent modifications (SELECT FOR UPDATE)
+                    const itemRow = await client.query(
+                        'SELECT total_recent, number_of_taken FROM items WHERE id = $1 FOR UPDATE',
+                        [taken.item_id]
+                    );
+                    const currentRecent = itemRow.rows[0].total_recent;
+                    const currentNumberOfTaken = itemRow.rows[0].number_of_taken;
+
+                    if (currentRecent === 0 || currentRecent - parseInt(taken.amount) < 0) {
+                        const err = new Error('Item Empty');
+                        err.code = 'ITEM_EMPTY';
+                        throw err;
+                    }
+
+                    const item_recent = currentRecent - parseInt(taken.amount);
+                    const newTakenItem = currentNumberOfTaken + parseInt(taken.amount);
+
+                    // Insert the taken record
+                    const return_amount = 0;
+                    const takensResult = await client.query(
+                        `INSERT INTO takens (user_id, item_id, amount, amount_recent, unit, location, return_amount, status_user, taken_time, created_at, updated_at)
+                        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,current_timestamp,current_timestamp,current_timestamp) RETURNING *`,
+                        [user_id, taken.item_id, taken.amount, taken.amount, taken.unit, taken.location, return_amount, false]
+                    );
+
+                    // Update item stock and taken count atomically
+                    const updateItemResult = await client.query(
+                        'UPDATE items SET total_recent = $1, number_of_taken = $2, updated_at = current_timestamp WHERE id = $3 RETURNING *',
+                        [item_recent, newTakenItem, taken.item_id]
+                    );
+
+                    return { updateItem: updateItemResult, takens: takensResult };
+                });
+                updateItem = txResult.updateItem;
+                takens = txResult.takens;
+            } catch (txError) {
+                if (txError.code === 'ITEM_EMPTY') {
+                    res.status(500).json({
+                        status: 'Cannot Create taken',
+                        message: 'Item Empty'
+                    })
+                    return
+                }
+                throw txError;
             }
-            // const checkItem = await takenHelper.checkAlreadyTaken(user_id, taken.item_id, taken.location)
-            // if(checkItem == true){
-            //     const newAmountUpdate = await takenHelper.addAmountUpdateTaken(user_id,taken.item_id,taken.amount)
-            //     newAmount = await takenHelper.addAmountTaken(user_id,taken.item_id,taken.amount)
-            //     console.log(newAmount);
-            //     takens =  await takenService.updateTaken(user_id,taken.item_id,newAmountUpdate,newAmount)
-            //     status = "Ditambahkan Dari Pengambilan Sebelumnya"
-            // }
-            // else{
+
+            // Audit log (outside transaction - non-critical)
             const newAmount = taken.amount
-                // newAmount = takenHelper.addAmountTakenItem(taken.item_id,taken.amount)
-            const takens = await takenService.create(user_id,taken)
             const status = "Pengambilan Baru"
-            // }
-            const newTakenItem = await takenHelper.updateAddTakenItem(taken.item_id,taken.amount)
-            const updateItem = await itemService.updateItemRecentTaken(taken.item_id, item_recent, newTakenItem)
-            const takenupdate = await takenUpdateService.createTaken(user_id,taken, newAmount,status)
+            const takenupdate = await takenUpdateService.createTaken(user_id, taken, newAmount, status)
 
             res.status(201).json({
                     status: 'taken Created',
@@ -49,7 +76,6 @@ class itemTakenController{
             });
         }
     }
-
     updateAddTaken = async(req,res,next) => {
         try {
             const user_id = req.user.rows[0].id

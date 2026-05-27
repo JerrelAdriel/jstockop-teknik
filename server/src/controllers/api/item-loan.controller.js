@@ -1,36 +1,66 @@
 const { loanService, loanUpdateService, itemService } = require("../../services")
 const { loanHelper } = require("../../helpers")
+const db = require("../../config/db.config")
 class itemLoanController{
     createLoan = async(req,res,next) =>{
         try {
             const user_id = req.user.rows[0].id
             const loan = req.body
-            // let newAmount;
-            // let status;
-            const item_recent = await loanHelper.reduceRecent(loan.item_id, loan.amount) 
-            if (item_recent === false){
-                res.status(500).json({
-                    status: 'Cannot Create Loan',
-                    message: 'Item Empty'
-                })
-                return
+
+            // Use a database transaction to prevent race conditions on stock
+            let updateItem, loans;
+            try {
+                const txResult = await db.transaction(async (client) => {
+                    // Lock the item row to prevent concurrent modifications (SELECT FOR UPDATE)
+                    const itemRow = await client.query(
+                        'SELECT total_recent, number_of_loan FROM items WHERE id = $1 FOR UPDATE',
+                        [loan.item_id]
+                    );
+                    const currentRecent = itemRow.rows[0].total_recent;
+                    const currentNumberOfLoan = itemRow.rows[0].number_of_loan;
+
+                    if (currentRecent === 0 || currentRecent - parseInt(loan.amount) < 0) {
+                        const err = new Error('Item Empty');
+                        err.code = 'ITEM_EMPTY';
+                        throw err;
+                    }
+
+                    const item_recent = currentRecent - parseInt(loan.amount);
+                    const newLoanItem = currentNumberOfLoan + parseInt(loan.amount);
+
+                    // Insert the loan record
+                    const return_amount = 0;
+                    const loansResult = await client.query(
+                        `INSERT INTO loans (user_id, item_id, amount, amount_recent, unit, location, return_amount, status_user, loan_time, created_at, updated_at)
+                        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,current_timestamp,current_timestamp,current_timestamp) RETURNING *`,
+                        [user_id, loan.item_id, loan.amount, loan.amount, loan.unit, loan.location, return_amount, false]
+                    );
+
+                    // Update item stock and loan count atomically
+                    const updateItemResult = await client.query(
+                        'UPDATE items SET total_recent = $1, number_of_loan = $2, updated_at = current_timestamp WHERE id = $3 RETURNING *',
+                        [item_recent, newLoanItem, loan.item_id]
+                    );
+
+                    return { updateItem: updateItemResult, loans: loansResult };
+                });
+                updateItem = txResult.updateItem;
+                loans = txResult.loans;
+            } catch (txError) {
+                if (txError.code === 'ITEM_EMPTY') {
+                    res.status(500).json({
+                        status: 'Cannot Create Loan',
+                        message: 'Item Empty'
+                    })
+                    return
+                }
+                throw txError;
             }
-            // const checkItem = await loanHelper.checkAlreadyLoan(user_id, loan.item_id, loan.location)
-            // if(checkItem == true){
-            //     const status_user = false
-            //     const newAmountUpdate = await loanHelper.addAmountUpdateLoan(user_id,loan.item_id,loan.amount)
-            //     newAmount = await loanHelper.addAmountLoan(user_id,loan.item_id,loan.amount)
-            //     loans =  await loanService.updateLoan(user_id,loan.item_id,newAmountUpdate,newAmount,status_user)
-            //     status = "Ditambahkan Dari Peminjaman Sebelumnya"
-            // }
-            // else{
+
+            // Audit log (outside transaction - non-critical)
             const newAmount = loan.amount
-            const loans = await loanService.create(user_id,loan)
             const status = "Peminjaman Baru"
-            // }
-            const newLoanItem = await loanHelper.updateAddLoanItem(loan.item_id,loan.amount)
-            const updateItem = await itemService.updateItemRecentLoan(loan.item_id, item_recent, newLoanItem)
-            const loanupdate = await loanUpdateService.createLoan(user_id,loan,newAmount, status)
+            const loanupdate = await loanUpdateService.createLoan(user_id, loan, newAmount, status)
 
             res.status(201).json({
                     status: 'Loan Created',
@@ -46,7 +76,6 @@ class itemLoanController{
             });
         }
     }
-
     updateAddLoan = async(req,res,next) => {
         try {
             const user_id = req.user.rows[0].id

@@ -223,7 +223,6 @@ class userController {
             const payload = {
                 id: user.rows[0].id,
                 username: username,
-                password: password,
                 role: user.rows[0].role
             }
 

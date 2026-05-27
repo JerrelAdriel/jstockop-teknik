@@ -13,7 +13,10 @@ app.use(bodyParser.text());
 // parse application/json
 app.use(bodyParser.json())
 //middleware
-app.use(cors())
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGIN || 'http://localhost:3000',
+  credentials: true
+}))
 app.use(express.json())
 
 app.use(router)

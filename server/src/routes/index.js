@@ -21,7 +21,9 @@ const ItemLoanController = new itemLoanController()
 const ItemTakenController = new itemTakenController()
 
 router.get("/",(req,res) => res.send("Server is running!"))
-router.post("/createadmin/teknik/stockop", UserController.createAdmin)
+// WARNING: This endpoint creates an admin user. Protected by checkAdmin middleware.
+// For initial setup only - ensure an admin account exists before using other admin-protected routes.
+router.post("/createadmin/teknik/stockop", Authorization.checkAdmin, UserController.createAdmin)
 router.post("/createuser", Authorization.checkAdmin, UserController.createUsers)
 router.put("/updateuser/:id", Authorization.checkAdmin, UserController.updateUsers)
 router.get("/getalluser", Authorization.checkAdmin, UserController.getAllUsers )
@@ -74,7 +76,8 @@ router.delete("/deletetaken/:id", Authorization.checkToken, ItemTakenController.
 router.put("/updatefinishedtaken/:id", Authorization.checkToken, ItemTakenController.updateFinishedTaken)
 router.delete("/finishedtaken/:id", Authorization.checkToken, ItemTakenController.finishedTaken)
 
-router.get("/getdata", ItemController.TesAnything)
-router.delete("/deleteall/:id", ItemController.TesAnything)
+// Debug routes removed for security - these were unauthenticated and exposed sensitive operations
+// router.get("/getdata", ItemController.TesAnything)
+// router.delete("/deleteall/:id", ItemController.TesAnything)
 
 module.exports = router

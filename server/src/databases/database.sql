@@ -121,18 +121,9 @@ CREATE TABLE finished_taken_item(
     CONSTRAINT fk_item FOREIGN KEY(item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
-CREATE TABLE finished_taken_item(
-    id SERIAL PRIMARY KEY,
-    user_name VARCHAR(255),
-    item_name VARCHAR(255),
-    merk VARCHAR(255),
-    specification VARCHAR(255),
-    total_taken INTEGER,
-    unit VARCHAR(255),
-    location VARCHAR(255),
-    taken_time TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE
-);
+-- DUPLICATE TABLE DEFINITION REMOVED
+-- The following duplicate definition of finished_taken_item has been removed to prevent SQL errors.
+-- The original definition above (with foreign keys) is used for active records.
 
 CREATE TABLE loans(
     id SERIAL PRIMARY KEY,
